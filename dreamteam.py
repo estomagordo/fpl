@@ -50,8 +50,7 @@ class DreamTeam:
                     valid.append(c[0][:2] + c[1][:3])
                     valid.append(c[0][:3] + c[1][:2])
                     valid.append(c[0][:4] + c[1][:1])
-
-        print('part selection')
+                    
         return [v for v in valid if len(v) == count]
 
     def build_dream_team(self):
