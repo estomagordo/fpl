@@ -89,8 +89,9 @@ class DreamTeam:
             forward_selections = self.part_selections(attackers_by_cost, for_count)
 
             for p in product(goalkeeper_selections, defender_selections, midfielder_selections, forward_selections):
-                selection_cost = sum(sum(a['now_cost'] for a in s) for s in p)
-                point_total = sum(sum(a['event_points'] for a in s) for s in p) + max(player['event_points'] for player in p)
+                team = [player for part in p for player in part]
+                selection_cost = sum(player['now_cost'] for player in team)
+                point_total = sum(player['event_points'] for player in team) + max(player['event_points'] for player in team)
                 team_counts = defaultdict(int)
 
                 for part in p:
