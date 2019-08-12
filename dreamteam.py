@@ -11,8 +11,7 @@ class DreamTeam:
     total_defender_count = 5
     total_midfielder_count = 5
     total_forward_count = 3
-    #valid_formations = ((1, 3, 4, 3), (1, 3, 5, 2), (1, 4, 3, 3), (1, 4, 4, 2), (1, 4, 5, 1), (1, 5, 3, 2), (1, 5, 4, 1))
-    valid_formations = ((1, 4, 3, 3),)
+    valid_formations = ((1, 3, 4, 3), (1, 3, 5, 2), (1, 4, 3, 3), (1, 4, 4, 2), (1, 4, 5, 1), (1, 5, 3, 2), (1, 5, 4, 1))
 
     def __init__(self):        
         self.url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
