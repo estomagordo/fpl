@@ -51,7 +51,19 @@ class DreamTeam:
                     valid.append(c[0][:3] + c[1][:2])
                     valid.append(c[0][:4] + c[1][:1])
                     
-        return [v for v in valid if len(v) == count]
+        per_score = {}
+
+        for part in valid:
+            if len(part) != count:
+                continue
+
+            score = sum(player['event_points'] for player in part)
+            cost = sum(player['now_cost'] for player in part)
+
+            if score not in per_score or per_score[score][0] > cost:
+                per_score[score] = (cost, part)
+        
+        return [v[1] for v in per_score.values()]
 
     def build_dream_team(self):
         def build(gk_count, def_count, mid_count, for_count):
