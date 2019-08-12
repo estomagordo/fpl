@@ -11,6 +11,7 @@ class DreamTeam:
     total_defender_count = 5
     total_midfielder_count = 5
     total_forward_count = 3
+    valid_formations = ((1, 3, 4, 3), (1, 3, 5, 2), (1, 4, 3, 3), (1, 4, 4, 2), (1, 4, 5, 1), (1, 5, 3, 2), (1, 5, 4, 1))
 
     def __init__(self):        
         self.url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
@@ -89,7 +90,7 @@ class DreamTeam:
 
             for p in product(goalkeeper_selections, defender_selections, midfielder_selections, forward_selections):
                 selection_cost = sum(sum(a['now_cost'] for a in s) for s in p)
-                point_total = sum(sum(a['event_points'] for a in s) for s in p)
+                point_total = sum(sum(a['event_points'] for a in s) for s in p) + max(player['event_points'] for player in p)
                 team_counts = defaultdict(int)
 
                 for part in p:
@@ -99,10 +100,11 @@ class DreamTeam:
                 if selection_cost <= base_budget and point_total > best and max(team_counts.values()) <= 3:
                     best = point_total
                     best_xi = p[0] + p[1] + p[2] + p[3]
+
             print(best, [p['first_name'] + ' ' + p['second_name'] for p in best_xi])
             return best, best_xi
 
-        results = [build(1, 3, 5, 2), build(1, 3, 4, 3), build(1, 4, 4, 2), build(1, 5, 3, 2), build(1, 4, 3, 3)]
+        results = [build(*formation) for formation in DreamTeam.valid_formations]
         return [result for result in results if result[0] == max(r[0] for r in results)][0]
 
     def get_best(self):
