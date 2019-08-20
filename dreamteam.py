@@ -1,8 +1,15 @@
+import datetime
+import os
+
 from collections import defaultdict
 from itertools import combinations, product
+from json import load, dump
 from requests import get
 
 class DreamTeam:
+    full_data_url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
+    full_data_path = 'C:\\Users\\chris\\OneDrive\\Dokument\\Python\\fpl\\data.json'
+
     min_price_goalie = 40
     min_price_defender = 40
     min_price_midfielder = 45
@@ -13,8 +20,7 @@ class DreamTeam:
     total_forward_count = 3
     valid_formations = ((1, 3, 4, 3), (1, 3, 5, 2), (1, 4, 3, 3), (1, 4, 4, 2), (1, 4, 5, 1), (1, 5, 2, 3), (1, 5, 3, 2), (1, 5, 4, 1))
 
-    def __init__(self):        
-        self.url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
+    def __init__(self):
         self.goalkeepers = []
         self.defenders = []
         self.midfielders = []
@@ -121,16 +127,54 @@ class DreamTeam:
         results = [build(*formation) for formation in DreamTeam.valid_formations]
         return [result for result in results if result[0] == max(r[0] for r in results)][0]
 
-    def get_best(self):
+    def try_get_master_data_from_file(self):
         data = {}
 
-        if True:
-            from json import load
-            with open('C:\\Users\\chris\\OneDrive\\Dokument\\Python\\fpl\\data.json', encoding='utf-8') as f:
-                data = load(f)
-        else:
-            response = get(self.url)
-            data = response.json()
+        if os.path.isfile(DreamTeam.full_data_path):
+            if os.path.getsize(DreamTeam.full_data_path) > 0:
+                with open(DreamTeam.full_data_path, encoding='utf-8') as f:
+                    data = load(f)
+
+        return data
+
+    def write_master_data_to_file(self, data):
+        with open(DreamTeam.full_data_path, 'w', encoding='utf-8') as f:
+            dump(data, f)
+
+    def get_master_data_from_remote(self):
+        response = get(DreamTeam.full_data_url)
+        return response.json()
+
+    def is_data_outdated(self, data):
+        return True
+        if not data:
+            return True
+
+        for event in data['events']:
+            if event['highest_score']:
+                continue
+
+            deadlinestamp = event['deadline_time_epoch']
+            deadline = datetime.datetime.fromtimestamp(deadlinestamp)
+            now = datetime.datetime.now()
+            three_hours = datetime.timedelta(hours=3)
+
+            if deadline + three_hours < now:
+                return True
+
+        return False
+
+    def get_master_data(self):
+        data = self.try_get_master_data_from_file()
+        
+        if self.is_data_outdated(data):
+            data = self.get_master_data_from_remote()
+            self.write_master_data_to_file(data)
+
+        return data
+    
+    def get_best(self):
+        data = self.get_master_data()
         
         players = data['elements']
 
