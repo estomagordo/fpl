@@ -8,7 +8,7 @@ from requests import get
 
 class DreamTeam:
     full_data_url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
-    full_data_path = 'C:\\Users\\chris\\OneDrive\\Dokument\\Python\\fpl\\data.json'
+    full_data_path = 'data.json'
 
     min_price_goalie = 40
     min_price_defender = 40
