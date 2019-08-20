@@ -113,7 +113,9 @@ class DreamTeam:
                     best = point_total
                     best_xi = p[0] + p[1] + p[2] + p[3]
 
-            print(best, [p['first_name'] + ' ' + p['second_name'] for p in best_xi])
+            print(f'Formation: {def_count}-{mid_count}-{for_count} Points: {best}')
+            print('\n'.join(p['first_name'] + ' ' + p['second_name'] for p in best_xi))
+            print()
             return best, best_xi
 
         results = [build(*formation) for formation in DreamTeam.valid_formations]
