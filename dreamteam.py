@@ -9,6 +9,7 @@ from requests import get
 class DreamTeam:
     full_data_url = 'https://fantasy.premierleague.com/api/bootstrap-static/'
     full_data_path = 'data.json'
+    dreamteam_path = 'dreamteam.json'
 
     min_price_goalie = 40
     min_price_defender = 40
@@ -71,7 +72,21 @@ class DreamTeam:
         
         return [v[1] for v in per_score.values()]
 
-    def build_dream_team(self):
+    def build_dream_team(self, data):
+        players = data['elements']
+
+        for player in players:
+            player_type = player['element_type']
+            
+            if player_type == 1:
+                self.goalkeepers.append(player)
+            elif player_type == 2:
+                self.defenders.append(player)
+            elif player_type == 3:
+                self.midfielders.append(player)
+            elif player_type == 4:
+                self.forwards.append(player)
+
         def build(gk_count, def_count, mid_count, for_count):
             base_budget = 1000 - (DreamTeam.total_goalie_count - gk_count) * DreamTeam.min_price_goalie - (DreamTeam.total_defender_count - def_count) * DreamTeam.min_price_defender - (DreamTeam.total_midfielder_count - mid_count) * DreamTeam.min_price_midfielder - (DreamTeam.total_forward_count - for_count) * DreamTeam.min_price_forward
             best = 0
@@ -118,14 +133,10 @@ class DreamTeam:
                 if selection_cost <= base_budget and point_total > best and max(team_counts.values()) <= 3:
                     best = point_total
                     best_xi = p[0] + p[1] + p[2] + p[3]
+            
+            return best, gk_count, def_count, mid_count, for_count, best_xi
 
-            print(f'Formation: {def_count}-{mid_count}-{for_count} Points: {best}')
-            print('\n'.join(p['first_name'] + ' ' + p['second_name'] for p in best_xi))
-            print()
-            return best, best_xi
-
-        results = [build(*formation) for formation in DreamTeam.valid_formations]
-        return [result for result in results if result[0] == max(r[0] for r in results)][0]
+        return [build(*formation) for formation in DreamTeam.valid_formations]
 
     def try_get_master_data_from_file(self):
         data = {}
@@ -171,26 +182,38 @@ class DreamTeam:
             self.write_master_data_to_file(data)
 
         return data
+
+    def write_dreamteams_to_file(self, dreamteams):
+        with open(DreamTeam.dreamteam_path, 'w', encoding='utf-8') as f:
+            dump(dreamteams, f)
+
+    def get_dreamteams_from_file(self):
+        dreamteams = []
+
+        if os.path.isfile(DreamTeam.dreamteam_path):
+            if os.path.getsize(DreamTeam.dreamteam_path) > 0:
+                with open(DreamTeam.dreamteam_path, encoding='utf-8') as f:
+                    dreamteams = load(f)
+
+        return dreamteams
     
     def get_best(self):
         data = self.get_master_data()
         
-        players = data['elements']
+        dreamteams = self.get_dreamteams_from_file()
+        
+        if self.is_data_outdated(data):
+            dreamteams.append(self.build_dream_team(data))
 
-        for player in players:
-            player_type = player['element_type']
-            
-            if player_type == 1:
-                self.goalkeepers.append(player)
-            elif player_type == 2:
-                self.defenders.append(player)
-            elif player_type == 3:
-                self.midfielders.append(player)
-            elif player_type == 4:
-                self.forwards.append(player)
+        return dreamteams
 
-        return self.build_dream_team()
+    def print_dreamteam(self, dreamteam):
+        for team in d
+        print(f'Formation: {def_count}-{mid_count}-{for_count} Points: {best}')
+        print('\n'.join(p['first_name'] + ' ' + p['second_name'] for p in best_xi))
+        print()
 
 if __name__ == '__main__':
     dt = DreamTeam()
-    dt.get_best()
+    dreamteam = dt.get_best()
+    dt.print_dreamteam(dremateam)
