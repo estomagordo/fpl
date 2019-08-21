@@ -146,7 +146,6 @@ class DreamTeam:
         return response.json()
 
     def is_data_outdated(self, data):
-        return True
         if not data:
             return True
 
