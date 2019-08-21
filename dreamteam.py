@@ -64,7 +64,7 @@ class DreamTeam:
             if len(part) != count:
                 continue
 
-            score = sum(player['event_points'] for player in part)
+            score = sum((player['total_points'] - player['event_points']) for player in part)
             cost = sum(player['now_cost'] for player in part)
 
             if score not in per_score or per_score[score][0] > cost:
@@ -107,13 +107,13 @@ class DreamTeam:
                 attackers_by_cost[fw['now_cost']].append(fw)
 
             for _, v in goalkeepers_by_cost.items():
-                v.sort(key=lambda player: -player['event_points'])
+                v.sort(key=lambda player: player['event_points'] - player['total_points'])
             for _, v in defenders_by_cost.items():
-                v.sort(key=lambda player: -player['event_points'])
+                v.sort(key=lambda player: player['event_points'] - player['total_points'])
             for _, v in midfielders_by_cost.items():
-                v.sort(key=lambda player: -player['event_points'])
+                v.sort(key=lambda player: player['event_points'] - player['total_points'])
             for _, v in attackers_by_cost.items():
-                v.sort(key=lambda player: -player['event_points'])
+                v.sort(key=lambda player: player['event_points'] - player['total_points'])
 
             goalkeeper_selections = self.part_selections(goalkeepers_by_cost, gk_count)
             defender_selections = self.part_selections(defenders_by_cost, def_count)
@@ -123,7 +123,7 @@ class DreamTeam:
             for p in product(goalkeeper_selections, defender_selections, midfielder_selections, forward_selections):
                 team = [player for part in p for player in part]
                 selection_cost = sum(player['now_cost'] for player in team)
-                point_total = sum(player['event_points'] for player in team) + max(player['event_points'] for player in team)
+                point_total = sum((player['total_points'] - player['event_points']) for player in team) + max(player['event_points'] for player in team)
                 team_counts = defaultdict(int)
 
                 for part in p:
@@ -202,18 +202,20 @@ class DreamTeam:
         
         dreamteams = self.get_dreamteams_from_file()
         
-        if self.is_data_outdated(data):
+        if True:#self.is_data_outdated(data):
             dreamteams.append(self.build_dream_team(data))
+            self.write_dreamteams_to_file(dreamteams)
 
         return dreamteams
 
     def print_dreamteam(self, dreamteam):
-        for team in d
-        print(f'Formation: {def_count}-{mid_count}-{for_count} Points: {best}')
-        print('\n'.join(p['first_name'] + ' ' + p['second_name'] for p in best_xi))
-        print()
+        return
+        # for team in d
+        # print(f'Formation: {def_count}-{mid_count}-{for_count} Points: {best}')
+        # print('\n'.join(p['first_name'] + ' ' + p['second_name'] for p in best_xi))
+        # print()
 
 if __name__ == '__main__':
     dt = DreamTeam()
     dreamteam = dt.get_best()
-    dt.print_dreamteam(dremateam)
+    dt.print_dreamteam(dreamteam)
