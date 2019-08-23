@@ -208,7 +208,8 @@ class DreamTeam:
 
         return dreamteams
 
-    def print_dreamteam(self, dreamteams):
+    def print_friendly_dreamteams(self, dreamteams):
+        s = ''
         for week in dreamteams:
             best = max(team[0] for team in week)
             team = []
@@ -217,12 +218,14 @@ class DreamTeam:
                 if t[0] == best:
                     team = t
                     break
+            s += f'Formation: {team[2]}-{team[3]}-{team[4]} Points: {team[0]}'
+            s += '\n\n'
+            s += '\n'.join(name for name in team[-1])
+            s += '\n\n'
 
-            print(f'Formation: {team[2]}-{team[3]}-{team[4]} Points: {team[0]}')
-            print('\n'.join(name for name in team[-1]))
-            print()
+        return s[:-1]
 
 if __name__ == '__main__':
     dt = DreamTeam()
     dreamteams = dt.get_best()
-    dt.print_dreamteam(dreamteams)
+    print(dt.print_friendly_dreamteams(dreamteams))
