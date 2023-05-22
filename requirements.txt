@@ -5,4 +5,4 @@
 Flask == 1.1.1
 
 # dreamteam.py: 7
-requests == 2.22.0
+requests == 2.31.0
